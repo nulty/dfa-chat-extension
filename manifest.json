@@ -5,10 +5,13 @@
   "manifest_version": 3,
   "permissions": [
     "declarativeContent",
+    "tabs",
+    "scripting"
   ],
   "background": {
     "service_worker": "service.js"
   },
+  "host_permissions": ["https://www.dfa.ie/passport/contact"],
   "action": {
     "default_popup": "popup.html"
     "default_icon": {

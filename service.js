@@ -34,3 +34,20 @@ async function alternateIcon() {
   let imageData = ctx.getImageData(0, 0, osc.width, osc.height);
   return imageData;
 }
+
+chrome.tabs.onActivated.addListener((_tab) => {
+  getCurrentTab().then((tab) => {
+    if (tab.url.match(/dfa.ie\/passports\/contact/)) {
+      chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ['content.js']
+      });
+    }
+  });
+});
+
+async function getCurrentTab() {
+  let queryOptions = { active: true, currentWindow: true };
+  let [tab] = await chrome.tabs.query(queryOptions);
+  return tab;
+}
