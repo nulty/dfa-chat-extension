@@ -3,7 +3,16 @@
   "description": "Easily get in contact with DFA about your passport application",
   "version": "1.0",
   "manifest_version": 3,
+  "permissions": [
+    "declarativeContent",
+  ],
+  "background": {
+    "service_worker": "service.js"
+  },
   "action": {
     "default_popup": "popup.html"
+    "default_icon": {
+      "16": "images/img-16.png"
+    }
   }
 }
