@@ -35,15 +35,15 @@ async function alternateIcon() {
   return imageData;
 }
 
-chrome.tabs.onActivated.addListener((_tab) => {
-  getCurrentTab().then((tab) => {
-    if (tab.url.match(/dfa.ie\/passports\/contact/)) {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ['content.js']
-      });
-    }
+let listener = (details) => {
+  if (details.method == "OPTIONS") return;
+  chrome.scripting.executeScript({
+    target: { tabId: details.tabId },
+    files: ["content.js"],
   });
+};
+chrome.webRequest.onCompleted.addListener(listener, {
+  urls: ["https://dfa.edgetier.com/api/chat-enabled/1*"],
 });
 
 async function getCurrentTab() {

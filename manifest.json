@@ -6,12 +6,16 @@
   "permissions": [
     "declarativeContent",
     "tabs",
-    "scripting"
+    "scripting",
+    "webRequest"
   ],
   "background": {
     "service_worker": "service.js"
   },
-  "host_permissions": ["https://www.dfa.ie/passport/contact"],
+  "host_permissions": [
+    "https://www.dfa.ie/passport/contact",
+    "https://dfa.edgetier.com/api/chat-enabled/1"
+  ],
   "action": {
     "default_popup": "popup.html"
     "default_icon": {
