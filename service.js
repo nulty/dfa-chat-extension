@@ -38,16 +38,28 @@ async function alternateIcon() {
   return imageData;
 }
 
-let listener = (details) => {
+let webRequestListener = (details) => {
   if (details.method == "OPTIONS") return;
   chrome.scripting.executeScript({
     target: { tabId: details.tabId },
     files: ["content.js"],
   });
 };
-chrome.webRequest.onCompleted.addListener(listener, {
+
+chrome.webRequest.onCompleted.addListener(webRequestListener, {
   urls: ["https://dfa.edgetier.com/api/chat-enabled/1*"],
 });
+
+// Listen for messages
+let messageListener = (request, sender, _sendResponse) => {
+  console.log("(service) received: ", request.dfaMessage);
+
+  if (request.dfaMessage === "removeWebRequestListener") {
+    chrome.webRequest.onCompleted.removeListener(webRequestListener);
+    console.log("removeWebRequestListener: Removed");
+  }
+};
+chrome.runtime.onMessage.addListener(messageListener);
 
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };

@@ -25,6 +25,8 @@ async function checkImg() {
     await sleep(3000);
     window.location.reload();
   } else if (readyImg) {
+    console.log("Ready image found!");
+    chrome.runtime.sendMessage({ dfaMessage: "removeWebRequestListener" });
   }
 }
 
