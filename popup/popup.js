@@ -43,12 +43,14 @@ startLink.addEventListener("click", (event) => {
     toggleLink(store.enabled);
   });
 });
+
 chrome.storage.local.get("formData", function (storage) {
   formFields.forEach((formField) => {
-    let data = JSON.parse(storage.formData)
-    form.querySelector(`input[name=${formField}]`).value = data[formField] || '';
+    let data = JSON.parse(storage.formData);
+    form.querySelector(`[name='${formField}']`).value = data[formField] || "";
   });
 });
+
 function toggleLink(enabled) {
   if (enabled) {
     startLink.style.display = "none";
