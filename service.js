@@ -2,6 +2,9 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.disable();
 
+  // initialize enabled to false
+  chrome.storage.local.set({ enabled: false });
+
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon
   alternateIcon().then((imageData) => {
