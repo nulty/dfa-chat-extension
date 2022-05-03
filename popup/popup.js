@@ -1,5 +1,5 @@
 const serializeToJson = (form) => {
-  const formEntries = new FormData(event.target).entries();
+  const formEntries = new FormData(form).entries();
   const json = Object.assign(
     ...Array.from(formEntries, ([x, y]) => ({ [x]: y })),
   );
