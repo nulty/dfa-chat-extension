@@ -1,3 +1,10 @@
+const serializeToJson = (form) => {
+  const formEntries = new FormData(event.target).entries();
+  const json = Object.assign(
+    ...Array.from(formEntries, ([x, y]) => ({ [x]: y })),
+  );
+  return JSON.stringify(json);
+};
 const url = "https://www.dfa.ie/passports/contact/";
 const form = document.querySelector("#contact-details");
 const formFields = ["name", "queryType", "emailAddress", "applicationNumber"]
@@ -5,13 +12,10 @@ const stopLink = document.querySelector("#stop");
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  const formEntries = new FormData(event.target).entries();
-  const json = Object.assign(
-    ...Array.from(formEntries, ([x, y]) => ({ [x]: y })),
-  );
 
-  chrome.storage.local.set({ formData: JSON.stringify(json) }, function () {
-    console.log("Value is set to " + JSON.stringify(json));
+  const json = serializeToJson(form);
+  chrome.storage.local.set({ formdata: json }, function () {
+    console.log("FormData: " + json);
   });
 
   // enable the loop
