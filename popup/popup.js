@@ -20,7 +20,7 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
 
   const json = serializeToJson(form);
-  chrome.storage.local.set({ formdata: json }, function () {
+  chrome.storage.local.set({ formData: json }, function () {
     console.log("FormData: " + json);
   });
 
