@@ -32,4 +32,12 @@ async function checkImg() {
   }
 }
 
+chrome.runtime.onMessage.addListener(
+  function (request, _sender, _sendResponse) {
+    if (request.dfaMessage === "reload") {
+      window.location.reload();
+    }
+  },
+);
+
 checkImg();

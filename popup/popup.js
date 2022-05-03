@@ -26,6 +26,9 @@ form.addEventListener("submit", (event) => {
 
   // enable the loop
   chrome.storage.local.set({ enabled: true });
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, { dfaMessage: "reload" });
+  });
 });
 
 // Send stop message to the service to remove the listener from
