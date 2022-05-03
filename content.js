@@ -27,6 +27,8 @@ async function checkImg() {
   } else if (readyImg) {
     console.log("Ready image found!");
     chrome.runtime.sendMessage({ dfaMessage: "removeWebRequestListener" });
+    console.log("Click image");
+    readyImg.click();
   }
 }
 
