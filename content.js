@@ -33,9 +33,12 @@ async function checkImg() {
 }
 
 chrome.runtime.onMessage.addListener(
-  function (request, _sender, _sendResponse) {
-    if (request.dfaMessage === "reload") {
-      window.location.reload();
+  function (request, _sender, reply) {
+    console.log("[content.js] message received", request);
+    if (request.dfaMessage === "checkImg") {
+      console.log("[content.js] checkImg");
+      checkImg();
+      reply("[content.js] checkImg executed...")
     }
   },
 );

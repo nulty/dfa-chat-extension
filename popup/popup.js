@@ -25,6 +25,17 @@ form.addEventListener("submit", (event) => {
   // enable the loop
   chrome.storage.local.set({ enabled: true });
   chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
+
+  chrome.tabs.query({ active: true, currentWindow: true })
+    .then(async (tabs) => {
+      await chrome.tabs.sendMessage(
+        tabs[0].id,
+        { dfaMessage: "checkImg" },
+        function (res) {
+          console.log("[popup.js] Response recieved from content to checkImg in popup: ", res);
+        },
+      );
+    });
 });
 
 // Send stop message to the service to remove the listener from
