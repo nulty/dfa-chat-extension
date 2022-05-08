@@ -17,6 +17,16 @@
     "https://www.dfa.ie/passport/contact",
     "https://dfa.edgetier.com/api/chat-enabled/1"
   ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.dfa.ie/passports/contact/"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Chat with DFA about your passport",
