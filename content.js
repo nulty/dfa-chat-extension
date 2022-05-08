@@ -13,10 +13,10 @@ async function checkImg() {
     "img[src='https://cdn.edgetier.com/dfa/chat-available.png']",
   );
 
-  let enabled = await chrome.storage.local.get("enabled");
-  console.log("enabled", enabled.enabled);
-  if (!enabled.enabled) {
-    console.log("DFA extension is not enabled!");
+  let { enabled } = await chrome.storage.local.get("enabled");
+  console.log("[content.js] checkImg.enabled", enabled);
+  if (!enabled) {
+    console.log("[content.js] DFA extension is not enabled!");
     return;
   }
 

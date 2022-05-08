@@ -12,9 +12,7 @@ const startLink = document.querySelector("#start");
 const formFields = ["name", "queryType", "emailAddress", "applicationNumber"];
 
 // Initialize on/off buttons
-chrome.storage.local.get("enabled", (r) => {
-  toggleLink(r.enabled);
-});
+chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -26,30 +24,24 @@ form.addEventListener("submit", (event) => {
 
   // enable the loop
   chrome.storage.local.set({ enabled: true });
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, { dfaMessage: "reload" });
-  });
+  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 });
 
 // Send stop message to the service to remove the listener from
 // the page
-stopLink.addEventListener("click", (event) => {
+stopLink.addEventListener("click", (_event) => {
   chrome.storage.local.set({ enabled: false });
-  chrome.storage.local.get("enabled", (store) => {
-    toggleLink(store.enabled);
-  });
+  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 });
 
-startLink.addEventListener("click", (event) => {
+startLink.addEventListener("click", (_event) => {
   chrome.storage.local.set({ enabled: true });
-  chrome.storage.local.get("enabled", (store) => {
-    toggleLink(store.enabled);
-  });
+  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 });
 
-chrome.storage.local.get("formData", function (storage) {
+chrome.storage.local.get(({ formData }) => {
   formFields.forEach((formField) => {
-    let data = JSON.parse(storage.formData);
+    let data = JSON.parse(formData);
     form.querySelector(`[name='${formField}']`).value = data[formField] || "";
   });
 });
