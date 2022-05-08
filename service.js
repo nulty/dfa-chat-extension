@@ -1,9 +1,24 @@
-// Disable the action unless the current tab is dfa
+let webRequestListener = (details) => {
+  if (details.method == "OPTIONS") return;
+  console.log("[service.js] webRequestListener executed, tab ", details.tabId);
+
+  chrome.tabs.sendMessage(details.tabId, { dfaMessage: "checkImg" })
+    .then((res) => {
+      console.log("[service.js] chrome.tabs.sendMessage: ", res);
+    })
+    .catch((err) => console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err));
+};
+
 chrome.runtime.onInstalled.addListener(() => {
+  console.log("[service.js] INSTALLED ");
   chrome.action.disable();
 
   // initialize enabled to false
   chrome.storage.local.set({ enabled: false });
+
+  chrome.webRequest.onCompleted.addListener(webRequestListener, {
+    urls: ["https://dfa.edgetier.com/api/chat-enabled/1*"],
+  });
 
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon
@@ -38,28 +53,6 @@ async function alternateIcon() {
   return imageData;
 }
 
-let webRequestListener = (details) => {
-  if (details.method == "OPTIONS") return;
-  chrome.scripting.executeScript({
-    target: { tabId: details.tabId },
-    files: ["content.js"],
-  });
-};
-
-chrome.webRequest.onCompleted.addListener(webRequestListener, {
-  urls: ["https://dfa.edgetier.com/api/chat-enabled/1*"],
-});
-
-// Listen for messages
-let messageListener = (request, sender, _sendResponse) => {
-  console.log("(service) received: ", request.dfaMessage);
-
-  if (request.dfaMessage === "removeWebRequestListener") {
-    chrome.webRequest.onCompleted.removeListener(webRequestListener);
-    console.log("removeWebRequestListener: Removed");
-  }
-};
-chrome.runtime.onMessage.addListener(messageListener);
 
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };
