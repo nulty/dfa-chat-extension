@@ -24,9 +24,9 @@ async function checkImg() {
     console.log("[content.js] Waiting image...reload in 3 seconds");
     sleep(3000).then(() => window.location.reload());
   } else if (readyImg) {
-    console.log("Ready image found!");
-    chrome.runtime.sendMessage({ dfaMessage: "removeWebRequestListener" });
-    console.log("Click image");
+    console.log("[content.js] Ready image found!");
+    chrome.storage.local.set({ enabled: false });
+    console.log("[content.js] Click image");
     readyImg.click();
   }
 }
