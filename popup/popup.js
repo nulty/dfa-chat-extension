@@ -19,7 +19,7 @@ form.addEventListener("submit", (event) => {
 
   const json = serializeToJson(form);
   chrome.storage.local.set({ formData: json }, function () {
-    console.log("FormData: " + json);
+    console.log("[popup.js] FormData: " + json);
   });
 
   // enable the loop
