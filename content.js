@@ -42,4 +42,3 @@ chrome.runtime.onMessage.addListener(
   },
 );
 
-checkImg();
