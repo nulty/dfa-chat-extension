@@ -42,6 +42,25 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
+function messageListener(request, _sender, reply) {
+  switch (request.message) {
+    case "enable":
+      chrome.storage.local.set({ enabled: true })
+        .then(() => chrome.storage.local.get("enabled"))
+        .then(({ enabled }) => reply({ message: enabled }));
+      break;
+    case "disable":
+      chrome.storage.local.set({ enabled: false })
+        .then(() => chrome.storage.local.get("enabled"))
+        .then(({ enabled }) => reply({ message: enabled }));
+      break;
+
+    default:
+  }
+  return true;
+}
+
+chrome.runtime.onMessage.addListener(messageListener);
 async function alternateIcon() {
   let response = await fetch(chrome.runtime.getURL("images/white-img-16.png"));
   let blob = await response.blob();
@@ -52,7 +71,6 @@ async function alternateIcon() {
   let imageData = ctx.getImageData(0, 0, osc.width, osc.height);
   return imageData;
 }
-
 
 async function getCurrentTab() {
   let queryOptions = { active: true, currentWindow: true };

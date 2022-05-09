@@ -23,8 +23,7 @@ form.addEventListener("submit", (event) => {
   });
 
   // enable the loop
-  chrome.storage.local.set({ enabled: true });
-  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
+  enable()
 
   chrome.tabs.query({ active: true, currentWindow: true })
     .then(async (tabs) => {
@@ -38,17 +37,10 @@ form.addEventListener("submit", (event) => {
     });
 });
 
-// Send stop message to the service to remove the listener from
-// the page
-stopLink.addEventListener("click", (_event) => {
-  chrome.storage.local.set({ enabled: false });
-  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
-});
+// Send stop message to disable the page
+stopLink.addEventListener("click", disable);
 
-startLink.addEventListener("click", (_event) => {
-  chrome.storage.local.set({ enabled: true });
-  chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
-});
+startLink.addEventListener("click", enable);
 
 chrome.storage.local.get(({ formData }) => {
   formFields.forEach((formField) => {
@@ -66,4 +58,15 @@ function toggleLink(enabled) {
     startLink.style.display = "inline";
   }
   chrome.action.setPopup({ popup: "popup/popup.html" });
+}
+
+function enable() {
+  chrome.runtime.sendMessage({ message: "enable" })
+    .then(({ message }) => toggleLink(message));
+}
+
+function disable() {
+  chrome.runtime.sendMessage({ message: "disable" })
+    .then(({ message }) => toggleLink(message));
+
 }
