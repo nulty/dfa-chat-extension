@@ -52,10 +52,10 @@ chrome.storage.local.get(({ formData }) => {
 function toggleLink(enabled) {
   if (enabled) {
     startLink.style.display = "none";
-    stopLink.style.display = "inline";
+    stopLink.style.display = "block";
   } else {
     stopLink.style.display = "none";
-    startLink.style.display = "inline";
+    startLink.style.display = "block";
   }
   chrome.action.setPopup({ popup: "popup/popup.html" });
 }

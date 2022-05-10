@@ -7,10 +7,13 @@
       main {
         margin: 15px;
       }
-      input[type=text], select { margin: 5px; padding: 5px; border-radius: 2px; width: 100%;}
+      input[type=text], select { margin: 5px 0; padding: 5px; border-radius: 2px; width: 100%;}
       #header {background-color: green; padding: 8px;}
-      body {padding: 0; margin: 0 }
+      #start,#stop {margin-top: 5px;}
+      body {padding: 0; margin: 0; }
       label {display: block}
+      #contact-details > div { display: none; }
+      * { box-sizing: border-box;}
     </style>
   </head>
   <body>
@@ -44,7 +47,7 @@
           <label for="applicationNumber">Application Number</label>
           <input name="applicationNumber" type="text" />
         </div>
-        <button type="submit" >Submit</button>
+        <button type="submit" >Run</button>
       </form>
       <a href="#" id="start">Stopped</a>
       <a href="#" id="stop">Running</a>

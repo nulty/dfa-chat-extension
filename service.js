@@ -10,6 +10,15 @@ async function webRequestListener({ url, tabId }) {
   }
 
   if (url.match(/disabled/)) {
+    chrome.notifications.create(
+      {
+        title: 'DFA Chat is disabled',
+        iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
+        message: "Try during between 9am and 4pm",
+        type: "basic",
+        eventTime: Date.now(),
+      },
+    );
     chrome.storage.local.set({ enabled: false });
     console.log("Chat is disabled");
   } else if (url.match(/limit/)) {
@@ -20,16 +29,22 @@ async function webRequestListener({ url, tabId }) {
       .then(({ count }) => {
         chrome.action.setBadgeText({ text: count.toString() });
       })
-      .then((res) => {
-        console.log("[service.js] chrome.tabs.sendMessage: ", res);
-      })
       .then(await sleep(3000))
       .then(chrome.tabs.sendMessage(tabId, { message: "reload" }))
       .catch((err) =>
         console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err)
       );
   } else if (url.match(/available/)) {
-    chrome.tabs.sendMessage(tabId, { message: "fillForm" });
+    chrome.notifications.create(
+      {
+        title: 'The DFA Chat form is ready!',
+        iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
+        message: "Fill in the form promptly!",
+        type: "basic",
+        eventTime: Date.now(),
+      },
+    );
+    // chrome.tabs.sendMessage(tabId, { message: "fillForm" });
   }
 }
 
@@ -95,10 +110,4 @@ async function alternateIcon() {
   ctx.drawImage(imageBitmap, 0, 0);
   let imageData = ctx.getImageData(0, 0, osc.width, osc.height);
   return imageData;
-}
-
-async function getCurrentTab() {
-  let queryOptions = { active: true, currentWindow: true };
-  let [tab] = await chrome.tabs.query(queryOptions);
-  return tab;
 }
