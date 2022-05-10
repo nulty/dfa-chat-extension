@@ -15,13 +15,15 @@
   },
   "host_permissions": [
     "https://www.dfa.ie/passport/contact",
+    "https://dfa.ie/passport/contact",
     "https://dfa.edgetier.com/api/chat-enabled/1",
     "https://cdn.edgetier.com/dfa"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://www.dfa.ie/passports/contact/"
+        "https://www.dfa.ie/passports/contact/",
+        "https://dfa.ie/passports/contact/"
       ],
       "js": [
         "content.js"
