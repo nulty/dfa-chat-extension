@@ -1,24 +1,49 @@
-let webRequestListener = (details) => {
-  if (details.method == "OPTIONS") return;
-  console.log("[service.js] webRequestListener executed, tab ", details.tabId);
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-  chrome.tabs.sendMessage(details.tabId, { dfaMessage: "checkImg" })
-    .then((res) => {
-      console.log("[service.js] chrome.tabs.sendMessage: ", res);
-    })
-    .catch((err) => console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err));
-};
+async function webRequestListener({ url, tabId }) {
+  let { enabled } = await chrome.storage.local.get(["enabled"]);
+  if (!enabled) {
+    console.log("[service.js] DFA extension is not enabled!");
+    return;
+  }
+
+  if (url.match(/disabled/)) {
+    chrome.storage.local.set({ enabled: false });
+    console.log("Chat is disabled");
+  } else if (url.match(/limit/)) {
+    console.log("Going round again");
+    chrome.storage.local.get(["count"])
+      .then(({ count }) => chrome.storage.local.set({ count: ++count }))
+      .then(() => chrome.storage.local.get(["enabled", "count"]))
+      .then(({ count }) => {
+        chrome.action.setBadgeText({ text: count.toString() });
+      })
+      .then((res) => {
+        console.log("[service.js] chrome.tabs.sendMessage: ", res);
+      })
+      .then(await sleep(3000))
+      .then(chrome.tabs.sendMessage(tabId, { message: "reload" }))
+      .catch((err) =>
+        console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err)
+      );
+  } else if (url.match(/available/)) {
+    chrome.tabs.sendMessage(tabId, { message: "fillForm" });
+  }
+}
+
+chrome.webRequest.onCompleted.addListener(webRequestListener, {
+  urls: ["https://cdn.edgetier.com/dfa/chat*.png"],
+});
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log("[service.js] INSTALLED ");
   chrome.action.disable();
 
+  chrome.storage.local.set({ count: 0 });
   // initialize enabled to false
   chrome.storage.local.set({ enabled: false });
-
-  chrome.webRequest.onCompleted.addListener(webRequestListener, {
-    urls: ["https://dfa.edgetier.com/api/chat-enabled/1*"],
-  });
 
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon

@@ -26,12 +26,12 @@ form.addEventListener("submit", (event) => {
   enable()
 
   chrome.tabs.query({ active: true, currentWindow: true })
-    .then(async (tabs) => {
-      await chrome.tabs.sendMessage(
+    .then((tabs) => {
+      chrome.tabs.sendMessage(
         tabs[0].id,
-        { dfaMessage: "checkImg" },
+        { message: "reload" },
         function (res) {
-          console.log("[popup.js] Response recieved from content to checkImg in popup: ", res);
+          console.log( "[popup.js] Response recieved from content to reload in popup: ", res);
         },
       );
     });

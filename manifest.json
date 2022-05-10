@@ -14,7 +14,8 @@
   },
   "host_permissions": [
     "https://www.dfa.ie/passport/contact",
-    "https://dfa.edgetier.com/api/chat-enabled/1"
+    "https://dfa.edgetier.com/api/chat-enabled/1",
+    "https://cdn.edgetier.com/dfa"
   ],
   "content_scripts": [
     {
