@@ -14,7 +14,7 @@ async function webRequestListener({ url, tabId }) {
       {
         title: 'DFA Chat is disabled',
         iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
-        message: "Try during between 9am and 4pm",
+        message: "Try during between 9am and 4.30pm",
         type: "basic",
         eventTime: Date.now(),
       },
