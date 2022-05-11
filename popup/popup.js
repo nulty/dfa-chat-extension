@@ -17,10 +17,10 @@ chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  // const json = serializeToJson(form);
-  // chrome.storage.local.set({ formData: json }, function () {
-  //   console.log("[popup.js] FormData: " + json);
-  // });
+  const json = serializeToJson(form);
+  chrome.storage.local.set({ formData: json }, function () {
+    console.log("[popup.js] FormData: " + json);
+  });
 
   // enable the loop
   enable();
@@ -46,12 +46,12 @@ stopLink.addEventListener("click", disable);
 
 startLink.addEventListener("click", enable);
 
-// chrome.storage.local.get(({ formData }) => {
-//   formFields.forEach((formField) => {
-//     let data = JSON.parse(formData);
-//     form.querySelector(`[name='${formField}']`).value = data[formField] || "";
-//   });
-// });
+chrome.storage.local.get(({ formData }) => {
+  formFields.forEach((formField) => {
+    let data = JSON.parse(formData);
+    form.querySelector(`[name='${formField}']`).value = data[formField] || "";
+  });
+});
 
 function toggleLink(enabled) {
   if (enabled) {

@@ -44,7 +44,7 @@ async function webRequestListener({ url, tabId }) {
         eventTime: Date.now(),
       },
     );
-    // chrome.tabs.sendMessage(tabId, { message: "fillForm" });
+    chrome.tabs.sendMessage(tabId, { message: "fillForm" });
   }
 }
 
