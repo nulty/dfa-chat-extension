@@ -8,8 +8,8 @@ const serializeToJson = (form) => {
 const url = "https://www.dfa.ie/passports/contact/";
 const form = document.querySelector("#contact-details");
 const stopLink = document.querySelector("#stop");
-const startLink = document.querySelector("#start");
 const formFields = ["name", "queryType", "emailAddress", "applicationNumber"];
+const submitButton = form.querySelector("button[type=submit]");
 
 // Initialize on/off buttons
 chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
@@ -44,8 +44,6 @@ form.addEventListener("submit", (event) => {
 // Send stop message to disable the page
 stopLink.addEventListener("click", disable);
 
-startLink.addEventListener("click", enable);
-
 chrome.storage.local.get(({ formData }) => {
   formFields.forEach((formField) => {
     let data = JSON.parse(formData);
@@ -55,21 +53,42 @@ chrome.storage.local.get(({ formData }) => {
 
 function toggleLink(enabled) {
   if (enabled) {
-    startLink.style.display = "none";
     stopLink.style.display = "block";
+    disableForm();
   } else {
     stopLink.style.display = "none";
-    startLink.style.display = "block";
+    reEnableForm();
   }
   chrome.action.setPopup({ popup: "popup/popup.html" });
+}
+
+function disableForm() {
+  submitButton.disabled = "disabled";
+  form.querySelector("select").disabled = "disabled";
+  form.querySelectorAll("input").forEach((e) => {
+    e.disabled = "disabled";
+  });
+}
+
+function reEnableForm() {
+  submitButton.disabled = "";
+  form.querySelector("select").disabled = "";
+  form.querySelector("button[type=submit]").disabled = "";
+  form.querySelectorAll("input").forEach((e) => {
+    e.disabled = "";
+  });
 }
 
 function enable() {
   chrome.runtime.sendMessage({ message: "enable" })
     .then(({ message }) => toggleLink(message));
+  disableForm();
 }
 
 function disable() {
   chrome.runtime.sendMessage({ message: "disable" })
-    .then(({ message }) => toggleLink(message));
+    .then(({ message }) => toggleLink(message))
+    .then(() => chrome.storage.local.set({ count: 0 }));
+  chrome.action.setBadgeText({ text: "" });
+  reEnableForm();
 }
