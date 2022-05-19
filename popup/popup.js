@@ -37,7 +37,7 @@ stopLink.addEventListener("click", disable);
 
 chrome.storage.local.get(({ formData }) => {
   formFields.forEach((formField) => {
-    let data = JSON.parse(formData);
+    let data = JSON.parse(formData || "{}");
     form.querySelector(`[name='${formField}']`).value = data[formField] || "";
   });
 });
