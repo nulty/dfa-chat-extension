@@ -35,14 +35,10 @@ function fillForm() {
 }
 
 chrome.runtime.onMessage.addListener(
-  function (request, _sender, reply) {
-    console.log("[content.js] message received", request.message);
-    if (request.message == "fillForm") {
+  function ({ message }, _sender, _reply) {
+    console.log("[content.js] message received", message);
+    if (message == "fillForm") {
       fillForm();
-    } else if (request.message == "reload") {
-      reply("Page reloaded");
-      window.location.reload();
     }
-    return true;
   },
 );
