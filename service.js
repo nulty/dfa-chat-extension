@@ -24,13 +24,16 @@ async function webRequestListener({ url, tabId }) {
   } else if (url.match(/limit/)) {
     console.log("Going round again");
     chrome.storage.local.get(["count"])
-      .then(({ count }) => chrome.storage.local.set({ count: ++count }))
-      .then(() => chrome.storage.local.get(["enabled", "count"]))
       .then(({ count }) => {
-        chrome.action.setBadgeText({ text: count.toString() });
+        return Promise.all(
+          [
+            chrome.storage.local.set({ count: ++count }),
+            chrome.action.setBadgeText({ text: count.toString() }),
+            sleep(3000),
+          ],
+        );
       })
-      .then(await sleep(3000))
-      .then(chrome.tabs.sendMessage(tabId, { message: "reload" }))
+      .then(() => chrome.tabs.reload(tabId))
       .catch((err) =>
         console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err)
       );
