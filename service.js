@@ -23,6 +23,7 @@ async function webRequestListener({ url, tabId }) {
     console.log("Chat is disabled");
   } else if (url.match(/limit/)) {
     console.log("Going round again");
+    chrome.webRequest.handlerBehaviorChanged();
     chrome.storage.local.get(["count"])
       .then(({ count }) => {
         return Promise.all(
