@@ -12,7 +12,7 @@ async function webRequestListener({ url, tabId }) {
   if (url.match(/disabled/)) {
     chrome.notifications.create(
       {
-        title: 'DFA Chat is disabled',
+        title: "DFA Chat is disabled",
         iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
         message: "Try during between 9am and 4.30pm",
         type: "basic",
@@ -35,12 +35,12 @@ async function webRequestListener({ url, tabId }) {
       })
       .then(() => chrome.tabs.reload(tabId))
       .catch((err) =>
-        console.error("[service.js] ERROR chrome.tabs.sendMessage: ", err)
+        console.error("[service.js] ERROR in reloading code: ", err)
       );
   } else if (url.match(/available/)) {
     chrome.notifications.create(
       {
-        title: 'The DFA Chat form is ready!',
+        title: "The DFA Chat form is ready!",
         iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
         message: "Fill in the form promptly!",
         type: "basic",
