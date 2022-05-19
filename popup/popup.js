@@ -27,16 +27,7 @@ form.addEventListener("submit", (event) => {
 
   chrome.tabs.query({ active: true, currentWindow: true })
     .then((tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { message: "reload" },
-      );
-    })
-    .then(function (res) {
-      console.log(
-        "[popup.js] Response recieved from content to reload in popup: ",
-        res,
-      );
+      chrome.tabs.reload(tabs[0].id);
     })
     .catch(console.error);
 });
