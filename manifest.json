@@ -25,6 +25,7 @@
         "https://www.dfa.ie/passports/contact/",
         "https://dfa.ie/passports/contact/"
       ],
+      "run_at": "document_start",
       "js": [
         "content.js"
       ]

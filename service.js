@@ -1,68 +1,12 @@
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function webRequestListener({ url, tabId }) {
-  let { enabled } = await chrome.storage.local.get(["enabled"]);
-  if (!enabled) {
-    console.log("[service.js] DFA extension is not enabled!");
-    return;
-  }
-
-  if (url.match(/disabled/)) {
-    chrome.notifications.create(
-      {
-        title: "DFA Chat is disabled",
-        iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
-        message: "Try during between 9am and 4.30pm",
-        type: "basic",
-        eventTime: Date.now(),
-      },
-    );
-    chrome.storage.local.set({ enabled: false });
-    console.log("Chat is disabled");
-  } else if (url.match(/limit/)) {
-    console.log("Going round again");
-    chrome.webRequest.handlerBehaviorChanged();
-    chrome.storage.local.get(["count"])
-      .then(({ count }) => {
-        return Promise.all(
-          [
-            chrome.storage.local.set({ count: ++count }),
-            chrome.action.setBadgeText({ text: count.toString() }),
-            sleep(3000),
-          ],
-        );
-      })
-      .then(() => chrome.tabs.reload(tabId))
-      .catch((err) =>
-        console.error("[service.js] ERROR in reloading code: ", err)
-      );
-  } else if (url.match(/available/)) {
-    chrome.notifications.create(
-      {
-        title: "The DFA Chat form is ready!",
-        iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
-        message: "Fill in the form promptly!",
-        type: "basic",
-        eventTime: Date.now(),
-      },
-    );
-    chrome.tabs.sendMessage(tabId, { message: "fillForm" });
-  }
-}
-
-chrome.webRequest.onCompleted.addListener(webRequestListener, {
-  urls: ["https://cdn.edgetier.com/dfa/chat*.png"],
-});
-
 chrome.runtime.onInstalled.addListener(() => {
   console.log("[service.js] INSTALLED ");
   chrome.action.disable();
 
   chrome.storage.local.set({ count: 0 });
   // initialize enabled to false
-  chrome.storage.local.set({ enabled: false });
+  chrome.storage.local.set({ enabled: false }, function () {
+    console.log("storage: ", false);
+  });
 
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon
@@ -88,15 +32,41 @@ chrome.runtime.onInstalled.addListener(() => {
 
 function messageListener(request, _sender, reply) {
   switch (request.message) {
+    case "notification":
+      chrome.notifications.create(
+        {
+          title: "DFA Chat is disabled",
+          iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
+          message: "Try during between 9am and 4.30pm",
+          type: "basic",
+          eventTime: Date.now(),
+        },
+      );
+      break;
+    case "count":
+      chrome.action.setBadgeText({ text: request.data });
+      break;
+    case "ready":
+      chrome.notifications.create(
+        {
+          title: "The DFA Chat form is ready!",
+          iconUrl: chrome.runtime.getURL("images/white-img-16.png"),
+          message: "Fill in the form promptly!",
+          type: "basic",
+          eventTime: Date.now(),
+        },
+      );
+      chrome.tabs.sendMessage(tabId, { message: "fillForm" });
+      break;
     case "enable":
-      chrome.storage.local.set({ enabled: true })
-        .then(() => chrome.storage.local.get("enabled"))
-        .then(({ enabled }) => reply({ message: enabled }));
+      chrome.storage.local.set({ enabled: true }, function () {
+        reply({ message: true });
+      });
       break;
     case "disable":
-      chrome.storage.local.set({ enabled: false })
-        .then(() => chrome.storage.local.get("enabled"))
-        .then(({ enabled }) => reply({ message: enabled }));
+      chrome.storage.local.set({ enabled: false }, function () {
+        reply({ message: "enabled:  false" });
+      });
       break;
 
     default:
@@ -105,6 +75,7 @@ function messageListener(request, _sender, reply) {
 }
 
 chrome.runtime.onMessage.addListener(messageListener);
+
 async function alternateIcon() {
   let response = await fetch(chrome.runtime.getURL("images/white-img-16.png"));
   let blob = await response.blob();

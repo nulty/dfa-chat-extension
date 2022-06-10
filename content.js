@@ -1,3 +1,52 @@
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+document.addEventListener("readystatechange", () => {
+  if (document.readyState == "complete") {
+    chrome.storage.local.get(["enabled"], function (storage) {
+      console.log("enabled: ", storage.enabled);
+      if (!storage.enabled) {
+        console.log("[service.js] DFA extension is not enabled!");
+        return;
+      }
+      setTimeout(function () {
+        src = document.querySelector("img[src*='chat-']").src;
+        if (src.match(/other/)) {
+          chrome.runtime.sendMessage(
+            { message: "notification" },
+          );
+          chrome.storage.local.set({ enabled: false });
+        } else if (src.match(/available/)) {
+
+          chrome.runtime.sendMessage(
+            { message: { data: "limit" } },
+          );
+        } else if (src.match(/disabled/)) {
+          chrome.storage.local.get(["count"])
+            .then(({ count }) => {
+              return Promise.all(
+                [
+                  chrome.storage.local.set({ count: ++count }),
+                  chrome.runtime.sendMessage({ message: 'count', data: count.toString() })
+                ],
+              );
+            })
+            .then(() => chrome.tabs.reload(tabId))
+            .catch((err) =>
+              console.error("[service.js] ERROR in reloading code: ", err)
+            );
+
+          window.location.reload();
+          // chrome.runtime.sendMessage(
+          //   { message: { data: "limit" } },
+          // );
+        }
+      }, 3000);
+    });
+  }
+});
+
 function fillForm() {
   let readyImg = document.querySelector(
     "img[src='https://cdn.edgetier.com/dfa/chat-available.png']",

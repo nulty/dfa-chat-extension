@@ -22,14 +22,17 @@ form.addEventListener("submit", (event) => {
     console.log("[popup.js] FormData: " + json);
   });
 
-  // enable the loop
-  enable();
-
-  chrome.tabs.query({ active: true, currentWindow: true })
-    .then((tabs) => {
-      chrome.tabs.reload(tabs[0].id);
-    })
-    .catch(console.error);
+  chrome.runtime.sendMessage({ message: "enable" })
+    .then(({ message }) => {
+      toggleLink(message);
+      disableForm();
+    }).then(() => {
+      chrome.tabs.query({ active: true, currentWindow: true })
+        .then((tabs) => {
+          chrome.tabs.reload(tabs[0].id);
+        });
+    });
+  // .catch(console.error);
 });
 
 // Send stop message to disable the page
@@ -62,24 +65,29 @@ function disableForm() {
 }
 
 function reEnableForm() {
-  submitButton.disabled = "";
-  form.querySelector("select").disabled = "";
-  form.querySelector("button[type=submit]").disabled = "";
+  console.log('reenable')
+  submitButton.disabled = undefined;
+  form.querySelector("select").disabled = undefined;
+  form.querySelector("button[type=submit]").disabled = undefined;
   form.querySelectorAll("input").forEach((e) => {
-    e.disabled = "";
+    e.disabled = undefined;
   });
 }
 
 function enable() {
   chrome.runtime.sendMessage({ message: "enable" })
-    .then(({ message }) => toggleLink(message));
-  disableForm();
+    .then(({ message }) => {
+      toggleLink(message);
+      disableForm();
+    });
 }
 
 function disable() {
   chrome.runtime.sendMessage({ message: "disable" })
-    .then(({ message }) => toggleLink(message))
-    .then(() => chrome.storage.local.set({ count: 0 }));
-  chrome.action.setBadgeText({ text: "" });
-  reEnableForm();
+    .then(({ message }) => {
+      toggleLink(message)
+      chrome.storage.local.set({ count: 0 })
+      chrome.action.setBadgeText({ text: "" });
+      reEnableForm();
+    })
 }
