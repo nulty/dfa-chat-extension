@@ -5,14 +5,20 @@
     <script defer src="popup.js"></script>
     <style type="text/css" media="screen">
       main {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
         margin: 15px;
+
+      }
+      main button {
+        width: 40%;
       }
       input[type=text], select { margin: 5px 0; padding: 5px; border-radius: 2px; width: 100%;}
       #header {background-color: green; padding: 8px;}
       #start,#stop {margin-top: 5px;}
       body {padding: 0; margin: 0; }
       label {display: block}
-      /* #contact-details > div { display: none; } */
       * { box-sizing: border-box;}
     </style>
   </head>
@@ -21,36 +27,8 @@
       <img src="../images/dfa-logo-80.png" alt="Department of Foreign Affairs"/>
     </section>
     <main>
-      <form id="contact-details">
-        <div>
-          <label for="name">Name</label>
-          <input name="name" type="text" />
-        </div>
-        <div>
-          <label for="queryType">Query</label>
-          <select name="queryType">
-            <option value="Application Turnaround Times">Application Turnaround Times</option>
-            <option value="Citizenship">Citizenship</option>
-            <option value="First Time Applications">First Time Applications</option>
-            <option value="Gender Recognition/Transition">Gender Recognition/Transition</option>
-            <option value="General Passport Queries">General Passport Queries</option>
-            <option value="Other">Other</option>
-            <option value="Resubmission Links">Resubmission Links</option>
-            <option value="Turnaround Times">Turnaround Times</option>
-          </select>
-        </div>
-        <div>
-          <label for="emailAddress">Email</label>
-          <input name="emailAddress" type="text" />
-        </div>
-        <div>
-          <label for="applicationNumber">Application Number</label>
-          <input name="applicationNumber" type="text" />
-        </div>
-        <button type="submit" >Run</button>
-      </form>
-      <!-- <a href="#" id="start">Stopped</a> -->
-      <a href="#" id="stop">Stop</a>
+      <button id="runButton" type="button">Run</button>
+      <button id="stopButton" type="button">Stop</button>
     </main>
   </body>
 </html>

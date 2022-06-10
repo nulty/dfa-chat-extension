@@ -1,12 +1,9 @@
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("[service.js] INSTALLED ");
   chrome.action.disable();
 
   chrome.storage.local.set({ count: 0 });
   // initialize enabled to false
-  chrome.storage.local.set({ enabled: false }, function () {
-    console.log("storage: ", false);
-  });
+  chrome.storage.local.set({ enabled: false })
 
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon
@@ -56,7 +53,6 @@ function messageListener(request, _sender, reply) {
           eventTime: Date.now(),
         },
       );
-      chrome.tabs.sendMessage(tabId, { message: "fillForm" });
       break;
     case "enable":
       chrome.storage.local.set({ enabled: true }, function () {

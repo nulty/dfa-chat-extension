@@ -1,26 +1,12 @@
-const serializeToJson = (form) => {
-  const formEntries = new FormData(form).entries();
-  const json = Object.assign(
-    ...Array.from(formEntries, ([x, y]) => ({ [x]: y })),
-  );
-  return JSON.stringify(json);
-};
 const url = "https://www.dfa.ie/passports/contact/";
-const form = document.querySelector("#contact-details");
-const stopLink = document.querySelector("#stop");
-const formFields = ["name", "queryType", "emailAddress", "applicationNumber"];
-const submitButton = form.querySelector("button[type=submit]");
+const stopButton = document.querySelector("#stopButton");
+const runButton = document.querySelector("#runButton");
 
 // Initialize on/off buttons
 chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 
-form.addEventListener("submit", (event) => {
+runButton.addEventListener("click", (event) => {
   event.preventDefault();
-
-  const json = serializeToJson(form);
-  chrome.storage.local.set({ formData: json }, function () {
-    console.log("[popup.js] FormData: " + json);
-  });
 
   chrome.runtime.sendMessage({ message: "enable" })
     .then(({ message }) => {
@@ -32,46 +18,32 @@ form.addEventListener("submit", (event) => {
           chrome.tabs.reload(tabs[0].id);
         });
     });
-  // .catch(console.error);
 });
-
+chrome.storage.local.get(["enabled"], function ({ enabled }) {
+  toggleLink(enabled);
+});
 // Send stop message to disable the page
-stopLink.addEventListener("click", disable);
-
-chrome.storage.local.get(({ formData }) => {
-  formFields.forEach((formField) => {
-    let data = JSON.parse(formData || "{}");
-    form.querySelector(`[name='${formField}']`).value = data[formField] || "";
-  });
-});
+stopButton.addEventListener("click", disable);
 
 function toggleLink(enabled) {
   if (enabled) {
-    stopLink.style.display = "block";
+    stopButton.disabled = undefined;
+    runButton.disabled = "disabled";
     disableForm();
   } else {
-    stopLink.style.display = "none";
+    stopButton.disabled = "disabled";
+    runButton.disabled = undefined;
     reEnableForm();
   }
   chrome.action.setPopup({ popup: "popup/popup.html" });
 }
 
 function disableForm() {
-  submitButton.disabled = "disabled";
-  form.querySelector("select").disabled = "disabled";
-  form.querySelectorAll("input").forEach((e) => {
-    e.disabled = "disabled";
-  });
+  runButton.disabled = "disabled";
 }
 
 function reEnableForm() {
-  console.log('reenable')
-  submitButton.disabled = undefined;
-  form.querySelector("select").disabled = undefined;
-  form.querySelector("button[type=submit]").disabled = undefined;
-  form.querySelectorAll("input").forEach((e) => {
-    e.disabled = undefined;
-  });
+  runButton.disabled = undefined;
 }
 
 function enable() {
@@ -85,9 +57,9 @@ function enable() {
 function disable() {
   chrome.runtime.sendMessage({ message: "disable" })
     .then(({ message }) => {
-      toggleLink(message)
-      chrome.storage.local.set({ count: 0 })
+      toggleLink(message.enabled);
+      chrome.storage.local.set({ count: 0 });
       chrome.action.setBadgeText({ text: "" });
       reEnableForm();
-    })
+    });
 }
