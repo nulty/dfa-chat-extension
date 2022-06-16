@@ -1,9 +1,7 @@
 chrome.runtime.onInstalled.addListener(() => {
   chrome.action.disable();
 
-  chrome.storage.local.set({ count: 0 });
-  // initialize enabled to false
-  chrome.storage.local.set({ enabled: false })
+  chrome.storage.local.set({ enabled: false, count: 0 });
 
   // asynchronously fetch the alternate action icon
   // convert it to imagedata and pass it to  SetIcon
@@ -27,7 +25,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-function messageListener(request, _sender, reply) {
+function messageListener(request, _sender, _reply) {
   switch (request.message) {
     case "notification":
       chrome.notifications.create(
@@ -44,6 +42,7 @@ function messageListener(request, _sender, reply) {
       chrome.action.setBadgeText({ text: request.data });
       break;
     case "ready":
+      chrome.storage.local.set({ count: 0, enabled: false });
       chrome.notifications.create(
         {
           title: "The DFA Chat form is ready!",
@@ -53,18 +52,9 @@ function messageListener(request, _sender, reply) {
           eventTime: Date.now(),
         },
       );
-      break;
-    case "enable":
-      chrome.storage.local.set({ enabled: true }, function () {
-        reply({ message: true });
-      });
-      break;
-    case "disable":
-      chrome.storage.local.set({ enabled: false }, function () {
-        reply({ message: "enabled:  false" });
-      });
-      break;
 
+      chrome.action.setPopup({ popup: "popup/popup.html" });
+      break;
     default:
   }
   return true;

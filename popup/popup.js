@@ -8,9 +8,9 @@ chrome.storage.local.get(({ enabled }) => toggleLink(enabled));
 runButton.addEventListener("click", (event) => {
   event.preventDefault();
 
-  chrome.runtime.sendMessage({ message: "enable" })
-    .then(({ message }) => {
-      toggleLink(message);
+  chrome.storage.local.set({ enabled: true })
+    .then(() => {
+      toggleLink(true);
       disableForm();
     }).then(() => {
       chrome.tabs.query({ active: true, currentWindow: true })
@@ -47,18 +47,18 @@ function reEnableForm() {
 }
 
 function enable() {
-  chrome.runtime.sendMessage({ message: "enable" })
-    .then(({ message }) => {
-      toggleLink(message);
+  chrome.storage.local.set({ enabled: true })
+    .then(() => {
+      toggleLink(true);
       disableForm();
     });
 }
 
 function disable() {
-  chrome.runtime.sendMessage({ message: "disable" })
-    .then(({ message }) => {
-      toggleLink(message.enabled);
-      chrome.storage.local.set({ count: 0 });
+  chrome.storage.local.set({ enabled: false, count: 0 })
+    .then(() => {
+      toggleLink(false);
+      // chrome.storage.local.set({ count: 0, enabled: false });
       chrome.action.setBadgeText({ text: "" });
       reEnableForm();
     });
