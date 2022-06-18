@@ -1,7 +1,9 @@
+let storage = chrome.storage.local
 let interval;
+
 document.addEventListener("readystatechange", () => {
   if (document.readyState == "complete") {
-    chrome.storage.local.get(["enabled"], function (storage) {
+    storage.get(["enabled"], function (storage) {
       if (!storage.enabled) {
         console.log("[content.js] DFA extension is not enabled!");
         return;
@@ -20,28 +22,30 @@ function loop() {
       chrome.runtime.sendMessage(
         { message: "notification" },
       );
-      chrome.storage.local.set({ enabled: false });
+      storage.set({ enabled: false });
     } else if (src.match(/available/)) {
       chrome.runtime.sendMessage(
         { message: { data: "ready" } },
       );
     } else if (src.match(/limit/)) {
-      chrome.storage.local.set({ ready: true })
-      chrome.storage.local.get("enabled", function ({ enabled }) {
+      storage.get("ready", function ({ ready }) {
+        ready || storage.set({ ready: true });
+      });
+      storage.get("enabled", function ({ enabled }) {
         if (!enabled) return;
 
-        chrome.storage.local.get(["count"])
+        storage.get(["count"])
           .then(({ count }) => {
             return Promise.all(
               [
-                chrome.storage.local.set({ count: ++count }),
+                storage.set({ count: ++count }),
                 chrome.runtime.sendMessage({
                   message: "count",
                   data: count.toString(),
                 }),
               ],
             );
-          })
+          });
 
         setTimeout(() => window.location.reload(), 1000);
       });
