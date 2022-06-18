@@ -63,23 +63,3 @@ function disable() {
     });
 }
 
-function audioNotification() {
-  var yourSound = new Audio(
-    chrome.runtime.getURL("sound/ready.mp3"),
-  );
-  yourSound.play();
-}
-
-chrome.storage.onChanged.addListener(function (changes) {
-  if (!changes.ready) return;
-  if (changes.ready.newValue) {
-    let count = 5;
-    let interval = setInterval(function () {
-      audioNotification();
-      count--;
-      if (count == 0) {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
-});
