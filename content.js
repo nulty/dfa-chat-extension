@@ -16,7 +16,7 @@ function loop() {
   src = document.querySelector("img[src*='chat-']").src;
   if (src) {
     clearInterval(interval);
-    if (src.match(/asdfasdf/)) {
+    if (src.match(/disabled/)) {
       chrome.runtime.sendMessage(
         { message: "notification" },
       );
@@ -25,7 +25,7 @@ function loop() {
       chrome.runtime.sendMessage(
         { message: { data: "ready" } },
       );
-    } else if (src.match(/disabled/)) {
+    } else if (src.match(/limit/)) {
       chrome.storage.local.get("enabled", function ({ enabled }) {
         if (!enabled) return;
 
