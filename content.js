@@ -26,6 +26,7 @@ function loop() {
         { message: { data: "ready" } },
       );
     } else if (src.match(/limit/)) {
+      chrome.storage.local.set({ ready: true })
       chrome.storage.local.get("enabled", function ({ enabled }) {
         if (!enabled) return;
 

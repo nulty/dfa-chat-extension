@@ -55,11 +55,31 @@ function enable() {
 }
 
 function disable() {
-  chrome.storage.local.set({ enabled: false, count: 0 })
+  chrome.storage.local.set({ enabled: false, count: 0, ready: false })
     .then(() => {
       toggleLink(false);
-      // chrome.storage.local.set({ count: 0, enabled: false });
       chrome.action.setBadgeText({ text: "" });
       reEnableForm();
     });
 }
+
+function audioNotification() {
+  var yourSound = new Audio(
+    chrome.runtime.getURL("sound/ready.mp3"),
+  );
+  yourSound.play();
+}
+
+chrome.storage.onChanged.addListener(function (changes) {
+  if (!changes.ready) return;
+  if (changes.ready.newValue) {
+    let count = 5;
+    let interval = setInterval(function () {
+      audioNotification();
+      count--;
+      if (count == 0) {
+        clearInterval(interval);
+      }
+    }, 1000);
+  }
+});
