@@ -22,6 +22,17 @@ runButton.addEventListener("click", (event) => {
 chrome.storage.local.get(["enabled"], function ({ enabled }) {
   toggleLink(enabled);
 });
+chrome.storage.local.onChanged.addListener(function(changes, _areaName) {
+  enabled =  changes.enabled && changes.enabled.newValue
+  ready =  changes.ready && changes.ready.newValue
+
+  if(enabled || ready) {
+    toggleLink(false)
+  } else {
+    toggleLink(true)
+  }
+})
+
 // Send stop message to disable the page
 stopButton.addEventListener("click", disable);
 
