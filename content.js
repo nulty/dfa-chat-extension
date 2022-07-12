@@ -24,13 +24,13 @@ function loop() {
       );
       storage.set({ enabled: false });
     } else if (src.match(/available/)) {
+      storage.get("ready", function ({ ready }) {
+        ready || storage.set({ ready: true });
+      });
       chrome.runtime.sendMessage(
         { message: { data: "ready" } },
       );
     } else if (src.match(/limit/)) {
-      storage.get("ready", function ({ ready }) {
-        ready || storage.set({ ready: true });
-      });
       storage.get("enabled", function ({ enabled }) {
         if (!enabled) return;
 
