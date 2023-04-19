@@ -1,54 +1,47 @@
 let storage = chrome.storage.local
-let interval;
+let interval
 
 document.addEventListener("readystatechange", () => {
-  if (document.readyState == "complete") {
+  if (document.readyState === "complete") {
     storage.get(["enabled"], function (storage) {
       if (!storage.enabled) {
-        console.log("[content.js] DFA extension is not enabled!");
-        return;
+        console.log("[content.js] DFA extension is not enabled!")
+        return
       }
-
-      interval = setInterval(loop, 500);
-    });
+      interval = setInterval(loop, 500)
+    })
   }
-});
+})
 
 function loop() {
-  src = document.querySelector("img[src*='chat-']").src;
+  src = document.querySelector("img[src*='chat-']").src
   if (src) {
-    clearInterval(interval);
+
+    clearInterval(interval)
     if (src.match(/disabled/)) {
-      chrome.runtime.sendMessage(
-        { message: "notification" },
-      );
-      storage.set({ enabled: false });
+      chrome.runtime.sendMessage({ message: "notification" })
+      storage.set({ enabled: false })
     } else if (src.match(/available/)) {
       storage.get("ready", function ({ ready }) {
-        ready || storage.set({ ready: true });
-      });
-      chrome.runtime.sendMessage(
-        { message: { data: "ready" } },
-      );
+        storage.set({ ready: true, enabled: false })
+        ready || storage.set({ ready: true })
+      })
     } else if (src.match(/limit/)) {
       storage.get("enabled", function ({ enabled }) {
-        if (!enabled) return;
+        if (!enabled) return
 
-        storage.get(["count"])
-          .then(({ count }) => {
-            return Promise.all(
-              [
-                storage.set({ count: ++count }),
-                chrome.runtime.sendMessage({
-                  message: "count",
-                  data: count.toString(),
-                }),
-              ],
-            );
-          });
+        storage.get(["count"]).then(({ count }) => {
+          return Promise.all([
+            storage.set({ count: ++count }),
+            chrome.runtime.sendMessage({
+              message: "count",
+              data: count.toString(),
+            }),
+          ])
+        })
 
-        setTimeout(() => window.location.reload(), 1000);
-      });
+        setTimeout(() => window.location.reload(), 1000)
+      })
     }
   }
 }
