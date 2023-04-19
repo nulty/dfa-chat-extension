@@ -26,6 +26,7 @@ function loop() {
         storage.set({ ready: true, enabled: false })
         ready || storage.set({ ready: true })
       })
+      chrome.runtime.sendMessage({ message: "ready" })
     } else if (src.match(/limit/)) {
       storage.get("enabled", function ({ enabled }) {
         if (!enabled) return
