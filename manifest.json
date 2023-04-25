@@ -6,7 +6,6 @@
   "permissions": [
     "declarativeContent",
     "storage",
-    "tabs",
     "notifications"
   ],
   "background": {
